@@ -1,11 +1,7 @@
 require('dotenv').config();
 
-const schedule = require('./cronJob.js');
+const server = require('./api/server');
+const PORT = process.env.PORT || 5000;
 
-const server = require('./server');
+server.listen(PORT, () => console.log(`Server is listening on PORT: ${PORT}`));
 
-const PORT = process.env.PORT || 4000;
-
-schedule()
-
-server.listen(PORT, () => console.log(`Hello World! Port: ${PORT}`));

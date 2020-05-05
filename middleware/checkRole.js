@@ -1,0 +1,1 @@
+// This file will check the role of the user to validate access to certain endpoints
