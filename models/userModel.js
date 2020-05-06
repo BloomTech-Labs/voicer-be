@@ -1,20 +1,27 @@
 const db = require('../data/dbConfig.js');
+const voice = require('./voiceSamplesModel.js');
 
 // Returns all users
-const find = (filter) => {
+const findBasic = async (filter) => {
     filter.active = true;
-    return db('users')
+    let users = await db('users')
             .where(filter);
+    users.forEach(user => {
+        users.samples = await voice.find(user.id);
+    })
+    return users;
 }
 
-// Returns user with the given userId
+// Returns user with the given userId and all voice samples
 const findById = (id) => {
-    return db('users')
+    const user = await db('users')
             .where({
-                id,
+                id: id,
                 active: true
             })
             .first();
+    user.samples = await voice.find(user.id);
+    return user;
 }
 
 const findByEmail = (email) => {
@@ -76,7 +83,6 @@ const toggleActive = async user => {
 }
 
 module.exports = {
-    find,
     findById,
     findByEmail,
     addUser,
