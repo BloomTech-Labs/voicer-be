@@ -1,5 +1,9 @@
 const db = require('../data/dbConfig.js');
 
+const find = () => {
+  return db('attributes');
+}
+
 const findById = (id) => {
   return db('attributes')
     .where({id})
@@ -8,19 +12,19 @@ const findById = (id) => {
 
 const add = async (data) => {
   const [id] = await db('attributes')
-                      .insert(data)
-                      .returning('id');
+    .insert(data)
+    .returning('id');
   return findById(id);
 }
 
 const remove = async (id) => {
-  const deleted = await db('attributes')
-                        .where({id})
-                        .del();
-  return deleted > 0;
+  return await db('attributes')
+    .where({id})
+    .del();
 }
 
 module.exports = {
+  find,
   findById,
   add,
   remove
