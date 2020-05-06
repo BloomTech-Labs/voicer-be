@@ -1,14 +1,41 @@
 const db = require('../data/dbConfig.js');
 const avs = require('./attrVoiceSampleModel.js');
 
-const find = (id) => {
-  return db('voice_samples')
-    .where({"owner": id});
+const find = async (id) => {
+  // Find all voice samples where id = user.id
+  let idArray = await db('voice_samples')
+    .where({owner: id})
+    .select('id');
+  
+  let samples = [];
+
+  idArray.forEach(sample => {
+    samples.push(findById(sample));
+  })
+
+  return samples;
 }
 
-const findById = (id) => {
-  return db('voice_samples')
-    .where({id});
+const findById = async (id) => {
+  // Get voice sample
+  const sample = await db('voice_samples')
+    .where({id})
+    .select("title", "description", "rating", "s3_location");
+  
+  // Get attribute voice sample id's
+  const assoc = await avs.findAll(sample.id);
+
+  // Create an array and push json objects for each attribute into it
+  let attributes = [];
+  assoc.forEach(association => {
+    let temp = await avs.findById(association);
+    attributes.push(temp);
+  });
+
+  // Set sample attributes to the json array
+  sample.attributes = attributes;
+
+  return sample;
 }
 
 const addSample = async (data) => {
@@ -26,40 +53,9 @@ const updateSample = async (data) => {
   return findById(id);
 }
 
-const deleteSample = async (id) => {
-  // get associations
-  const assoc = await getAVS(id);
-  
-  // delete each association
-  assoc.forEach(association => {
-    if(!avs.remove(association)) {
-      // return false if error
-      return false;
-    }
-  })
-
-  // delete voice sample
-  const deleted = await db('voice_samples')
-                          .where(id)
-                          .del();
-
-  // return true if deleted
-  return deleted > 0;
-}
-
-const getAVS = async (id) => {
-  const arr = await db('attributes_voice_samples')
-                      .where({
-                        'voice_sample_id': id
-                      })
-                      .select('id');
-  return arr;
-}
-
 module.exports = {
   find,
   findById,
   addSample,
-  updateSample,
-  deleteSample
+  updateSample
 }
