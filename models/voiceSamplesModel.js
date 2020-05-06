@@ -29,7 +29,7 @@ const findById = async (id) => {
   // Create an array and push json objects for each attribute into it
   let attributes = [];
   assoc.forEach(association => {
-    let temp = await avs.findById(association);
+    let temp = avs.findById(association);
     attributes.push(temp);
   });
 
