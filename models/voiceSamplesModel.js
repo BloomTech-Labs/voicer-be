@@ -10,7 +10,7 @@ const find = async (id) => {
   let samples = [];
 
   idArray.forEach(sample => {
-    let temp = await findById(sample);
+    let temp = findById(sample);
     samples.push(temp);
   })
 
