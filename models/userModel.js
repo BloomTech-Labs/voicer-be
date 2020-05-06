@@ -6,9 +6,9 @@ const findBasic = async (filter) => {
     filter.active = true;
     let users = await db('users')
             .where(filter);
-    users.forEach(user => {
-        users.samples = voice.find(user.id);
-    })
+    // users.forEach(user => {
+    //     users.samples = voice.find(user.id);
+    // })
     return users;
 }
 
