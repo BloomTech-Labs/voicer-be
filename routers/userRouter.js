@@ -9,7 +9,7 @@ const Users = require('../models/userModel.js');
 
 // Find all users
 router.get('/', (req, res) => {
-    Users.findBasic()
+    Users.findBasic(req.query)
         .then(users => {
             console.log(users)
             res.status(200).json(users);
