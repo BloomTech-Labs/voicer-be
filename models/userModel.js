@@ -83,6 +83,7 @@ const toggleActive = async user => {
 }
 
 module.exports = {
+    findBasic,
     findById,
     findByEmail,
     addUser,
