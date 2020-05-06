@@ -1,35 +1,33 @@
 const db = require('../data/dbConfig.js');
-const attributes = require('./attributesModel.js');
+
+const findAll = (id) => {
+  return db('attributes_voice_samples')
+    .where({sample_id: id})
+    .select("id");
+}
 
 const findById = (id) => {
   return db('attributes_voice_samples')
-    .where({ id });
+    .where({id})
+    .rightOuterJoin("attributes", "attribute_id", "attributes.id")
+    .select("type", "title", "description");
 }
 
 const add = async (data) => {
   const [id] = await db('attributes_voice_samples')
-                      .insert(data)
-                      .returning('id');
+    .insert(data)
+    .returning('id');
   return [id] ? true : false;
 }
 
 const remove = async (id) => {
-  // Store information about target AVS row in data
-  const data = await findById(id);
-
-  // Delete the associated attribute
-  const attrDel = attributes.remove(data.attribute_id);
-
-  // Delete the AVS row
-  const avsDel = await db('attributes_voice_samples')
-                        .where({'id': data.id})
-                        .del();
-  
-  // Return true if both deletions were successful
-  return (attrDel && (avsDel > 0));
+  return await db('attributes_voice_samples')
+    .where({id})
+    .del
 }
 
 module.exports = {
+  findAll,
   findById,
   add,
   remove
