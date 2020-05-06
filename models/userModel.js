@@ -7,7 +7,7 @@ const findBasic = async (filter) => {
     let users = await db('users')
             .where(filter);
     users.forEach(user => {
-        users.samples = await voice.find(user.id);
+        users.samples = voice.find(user.id);
     })
     return users;
 }
