@@ -10,8 +10,7 @@ exports.up = function(knex) {
 			.string('title');  
 
 		table
-			.string('description'); // 
-
+			.string('description');
   })
 };
 
