@@ -13,7 +13,7 @@ const findBasic = async (filter) => {
 }
 
 // Returns user with the given userId and all voice samples
-const findById = (id) => {
+const findById = async (id) => {
     const user = await db('users')
             .where({
                 id: id,
