@@ -3,40 +3,32 @@ const avs = require('./attrVoiceSampleModel.js');
 
 const find = async (id) => {
   // Find all voice samples where id = user.id
-  let idArray = await db('voice_samples')
+  let samples = await db('voice_samples')
     .where({owner: id})
-    .select('id');
+    .select('id', "title", "description", "rating", "s3_location")
   
-  let samples = [];
+  return Promise.all(samples.map(async sample => {
+    sample.attributes = await avs.findAll(sample.id);
+    return sample;
+  }))
+}
 
-  idArray.forEach(sample => {
-    let temp = findById(sample);
-    samples.push(temp);
+const findById = id => {
+  return db('voice_samples')
+    .where({id});
+}
+
+const findAll = async () => {
+  const samples = await db('voice_samples')
+    .select('id', 'title', 'description', 'rating', 's3_location');
+
+  samples.forEach(async (sample) => {
+    let temp = await avs.findAll(sample.id);
+    console.log(temp);
+    sample.attributes = temp;
   })
 
   return samples;
-}
-
-const findById = async (id) => {
-  // Get voice sample
-  const sample = await db('voice_samples')
-    .where({id})
-    .select("title", "description", "rating", "s3_location");
-  
-  // Get attribute voice sample id's
-  const assoc = await avs.findAll(sample.id);
-
-  // Create an array and push json objects for each attribute into it
-  let attributes = [];
-  assoc.forEach(association => {
-    let temp = avs.findById(association);
-    attributes.push(temp);
-  });
-
-  // Set sample attributes to the json array
-  sample.attributes = attributes;
-
-  return sample;
 }
 
 const addSample = async (data) => {
@@ -54,9 +46,17 @@ const updateSample = async (data) => {
   return findById(id);
 }
 
+const removeSample = async (id) => {
+  return await db('voice_samples')
+    .where({id})
+    .del();
+}
+
 module.exports = {
   find,
   findById,
+  findAll,
   addSample,
-  updateSample
+  updateSample,
+  removeSample
 }

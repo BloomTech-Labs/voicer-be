@@ -4,6 +4,20 @@ const authenticate = require('../middleware/authenticate.js');
 
 const voiceSample = require('../models/voiceSamplesModel.js');
 
+// Get all voice samples
+router.get('/', (req, res) => {
+  voiceSample.findAll()
+    .then(samples => {
+      res.status(200).json(samples)
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: "Could not retrieve voice samples",
+        error: err.message
+      })
+    })
+})
+
 // Get a list of voice samples for the specified user
 router.get('/:id', (req, res) => {
   // ID is the id of the user
@@ -20,8 +34,15 @@ router.get('/:id', (req, res) => {
 })
 
 // Add a voice sample
-router.post('/', /*authenticate(),*/ (req, res) => {
-  const sample = req.body;
+router.post('/', authenticate, (req, res) => {
+  const token = req.dJwt;
+  const {title, description, s3_location} = req.body;
+  const sample = {
+    owner: token.user_id,
+    title: title,
+    description: description,
+    s3_location: s3_location
+  }
   voiceSample.addSample(sample)
     .then(saved => {
       res.status(201).json(saved)
@@ -34,7 +55,7 @@ router.post('/', /*authenticate(),*/ (req, res) => {
 })
 
 // Update a voice sample
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, (req, res) => {
   const sample = req.body;
   voiceSample.updateSample(sample)
     .then(updated => {
@@ -48,5 +69,27 @@ router.put('/:id', async (req, res) => {
 })
 
 // Delete a voice sample
+router.delete('/:id', authenticate, (req, res) => {
+  const id = req.params.id;
+  voiceSample.findById(id)
+    .then(
+      voiceSample.removeSample(id)
+        .then(deleted => {
+          res.status(200).json(deleted)
+        })
+        .catch(err => {
+          res.status(500).json({
+            message: `Could not delete voice sample with ID: ${id}`,
+            error: err.message
+          })
+        })
+    )
+    .catch(err => {
+      res.status(400).json({
+        message: `Could not find voice sample with ID: ${id}`,
+        error: err.message
+      })
+    })
+})
 
 module.exports = router;
