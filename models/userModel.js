@@ -47,10 +47,12 @@ const addUser = async (user) => {
 }
 
 // Updates the user with the given userId
-const updateUser = async (user) => {
+const updateUser = async (id, user) => {
     return await db('users')
-                    .where({id: user.id})
-                    .update(user);
+        .where({id})
+        .first()
+        .update(user)
+        .returning('id');
 }
 
 // Archives the user with the given userId
