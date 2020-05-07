@@ -49,17 +49,24 @@ router.put('/:id', /*checkAccountOwner() ,*/ (req, res) => {
     const id = req.params.id;
     const user = req.body;
     Users.findById(id)
-        .then()
-        .catch()
-    Users.updateUser(user)
-        .then(updated => {
-            res.status(200).json(updated);
-        })
-        .catch(err => {
-            res.status(400).json({
+        .then(
+            Users.updateUser(id, user)
+                .then(updated => {
+                    res.status(200).json(updated)
+                })
+                .catch(err => {
+                    res.status(400).json({
+                        message: `Could not update user with ID: ${id}`,
+                        error: err.message
+                    })
+                })
+        )
+        .catch(
+            res.status(500).json({
+                message: `Could not find user with ID: ${id}`,
                 error: err.message
             })
-        })
+        )
 })
 
 // Deactivate user
