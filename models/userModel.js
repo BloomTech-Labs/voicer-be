@@ -31,7 +31,7 @@ const findInactiveUsers = () => {
 // Adds the user to the database and returns the new User
 const addUser = async (user) => {
   const [id] = await db('users').insert(user).returning('id');
-  return findById(id);
+  return findBasic({id: id});
 }
 
 // Updates the user with the given userId
