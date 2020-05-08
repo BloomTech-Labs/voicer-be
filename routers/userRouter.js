@@ -32,7 +32,7 @@ router.get('/inactive', /* checkAdmin() */ (req, res) => {
 // Find user by ID
 router.get('/:id', (req, res) => {
     const id = req.params.id;
-    Users.findById(id)
+    Users.findBasic({id: id})
         .then(user => {
             user.samples = voiceSample.find(id);
             res.status(200).json(user);
