@@ -19,9 +19,16 @@ const findById = async (id) => {
       id: id,
       active: true
     })
-    .first();
-  user.samples = await voice.find(user.id);
-  return user;
+		.first();
+	user.samples = await voice.find(user.id);
+	return user;
+}
+
+const findSamples = async users => {
+	return Promise.all(users.map(async user => {
+		user.samples = voice.find(user.id);
+		return user;
+	}))
 }
 
 const findByEmail = (email) => {
