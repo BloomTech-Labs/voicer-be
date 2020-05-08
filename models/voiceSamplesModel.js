@@ -7,28 +7,28 @@ const find = async (id) => {
     .where({owner: id})
     .select('id', "title", "description", "rating", "s3_location")
   
-  return Promise.all(samples.map(async sample => {
-    sample.attributes = await avs.findAll(sample.id);
-    return sample;
-  }))
+  return findAttributes(samples);
 }
 
-const findById = id => {
-  return db('voice_samples')
+const findById = async id => {
+  let sample = await db('voice_samples')
     .where({id});
+  sample.attributes - await avs.findAll(sample.id);
+  return sample;
 }
 
 const findAll = async () => {
   const samples = await db('voice_samples')
     .select('id', 'title', 'description', 'rating', 's3_location');
 
-  samples.forEach(async (sample) => {
-    let temp = await avs.findAll(sample.id);
-    console.log(temp);
-    sample.attributes = temp;
-  })
+  return findAttributes(samples);
+}
 
-  return samples;
+const findAttributes = async samples => {
+  return Promise.all(samples.map(async sample => {
+    sample.attributes = await avs.findAll(sample.id);
+    return sample;
+  }))
 }
 
 const addSample = async (data) => {
