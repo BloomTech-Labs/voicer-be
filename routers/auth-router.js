@@ -26,12 +26,10 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', (req, res) => {
     let { email, password } = req.body;
-    console.log(email, password)
 
     Users.findByEmail( email )
         .then(async (user) =>  {
             if(user && bcrypt.compareSync(password, user.password)) {
-                console.log(user)
                 const token = await common.createToken(user.id);
                 res.status(200).json({
                     token: token
@@ -43,7 +41,9 @@ router.post('/login', (req, res) => {
             };
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({
+                error: err.message
+            });
         })
 });
 
