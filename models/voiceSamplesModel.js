@@ -18,19 +18,6 @@ const findById = id => {
     .where({id});
 }
 
-const findAll = async () => {
-  const samples = await db('voice_samples')
-    .select('id', 'title', 'description', 'rating', 's3_location');
-
-  samples.forEach(async (sample) => {
-    let temp = await avs.findAll(sample.id);
-    console.log(temp);
-    sample.attributes = temp;
-  })
-
-  return samples;
-}
-
 const addSample = async (data) => {
   const [id] = await db('voice_samples')
                 .insert(data)
