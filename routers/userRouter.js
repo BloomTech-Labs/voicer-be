@@ -48,7 +48,7 @@ router.get('/:id', (req, res) => {
 router.put('/:id', /*checkAccountOwner() ,*/ (req, res) => {
     const id = req.params.id;
     const user = req.body;
-    Users.findById(id)
+    Users.findBasic({id: id})
         .then(
             Users.updateUser(id, user)
                 .then(updated => {
@@ -72,7 +72,7 @@ router.put('/:id', /*checkAccountOwner() ,*/ (req, res) => {
 // Deactivate user
 router.get('/:id/deactivate', /*checkAccountOwner() ,*/ (req, res) => {
     const id = req.params.id;
-    Users.findById(id)
+    Users.findBasic({id: id})
         .then(user => {
             console.log(user)
             if(!user.active) {
