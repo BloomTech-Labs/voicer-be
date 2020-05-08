@@ -1,6 +1,13 @@
 const db = require('../data/dbConfig.js');
 const voice = require('./voiceSamplesModel.js');
 
+// find by id
+const findById = id => {
+  return db('users')
+    .where({id})
+    .first();
+}
+
 // Returns all users
 const findBasic = async (filter) => {
   filter.active = true;
@@ -30,8 +37,10 @@ const findInactiveUsers = () => {
 
 // Adds the user to the database and returns the new User
 const addUser = async (user) => {
-  const [id] = await db('users').insert(user).returning('id');
-  return findBasic({id: id});
+  const [id] = await db('users')
+    .insert(user)
+    .returning('id');
+  return findById(id);
 }
 
 // Updates the user with the given userId
@@ -74,6 +83,7 @@ const toggleActive = async user => {
 
 module.exports = {
   findBasic,
+  findById,
   findByEmail,
   addUser,
   updateUser,
