@@ -42,7 +42,6 @@ const removeSample = async (id) => {
 module.exports = {
   find,
   findById,
-  findAll,
   addSample,
   updateSample,
   removeSample
