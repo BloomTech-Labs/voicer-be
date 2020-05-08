@@ -15,7 +15,8 @@ const find = async (id) => {
 
 const findById = id => {
   return db('voice_samples')
-    .where({id});
+    .where({id})
+    .first();
 }
 
 const addSample = async (data) => {
