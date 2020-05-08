@@ -7,26 +7,7 @@ const findBasic = async (filter) => {
   let users = await db('users')
 		.where(filter);
 	return Promise.all(users.map(async user => {
-		user.samples = voice.find(user.id);
-		return user;
-	}))
-}
-
-// Returns user with the given userId and all voice samples
-const findById = async (id) => {
-  const user = await db('users')
-    .where({
-      id: id,
-      active: true
-    })
-		.first();
-	user.samples = await voice.find(user.id);
-	return user;
-}
-
-const findSamples = async users => {
-	return Promise.all(users.map(async user => {
-		user.samples = voice.find(user.id);
+		user.samples = await voice.find(user.id);
 		return user;
 	}))
 }
@@ -93,7 +74,6 @@ const toggleActive = async user => {
 
 module.exports = {
   findBasic,
-  findById,
   findByEmail,
   addUser,
   updateUser,
