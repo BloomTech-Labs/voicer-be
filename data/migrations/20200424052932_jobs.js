@@ -7,6 +7,9 @@ exports.up = function(knex) {
       .integer('creator')
       .notNullable();
     table
+      .string('title')
+      .notNullable();
+    table
       .string('description', 512)
       .notNullable();
     table
