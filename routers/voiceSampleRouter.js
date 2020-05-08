@@ -4,20 +4,6 @@ const authenticate = require('../middleware/authenticate.js');
 
 const voiceSample = require('../models/voiceSamplesModel.js');
 
-// Get all voice samples
-router.get('/', (req, res) => {
-  voiceSample.findAll()
-    .then(samples => {
-      res.status(200).json(samples)
-    })
-    .catch(err => {
-      res.status(500).json({
-        message: "Could not retrieve voice samples",
-        error: err.message
-      })
-    })
-})
-
 // Get a list of voice samples for the specified user
 router.get('/:id', (req, res) => {
   // ID is the id of the user
