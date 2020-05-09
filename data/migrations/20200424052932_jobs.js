@@ -16,8 +16,8 @@ exports.up = function(knex) {
       .float('payrate')
       .notNullable();
     table
-      .boolean('status') // Is the job open:true or closed:false
-      .defaultTo(false);
+      .string('status')
+      .defaultTo("open");
   })
 };
 
