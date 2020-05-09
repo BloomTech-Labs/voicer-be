@@ -40,7 +40,7 @@ router.get('/:id', (req, res) => {
 router.post('/', authenticate, (req, res) => {
   const creatorId = req.dJwt.id;
   const job = req.body;
-  Jobs.createJobs(creatorId, job)
+  Jobs.createJob(creatorId, job)
     .then(created => {
       res.status(201).json(created)
     })
