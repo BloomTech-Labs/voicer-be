@@ -21,6 +21,20 @@ router.get('/', (req, res) => {
     })
 })
 
+// Find jobs created by user
+router.get('/myjobs/created', authenticate, (req, res) => {
+  const id = req.dJwt.user_id;
+  Jobs.findJobsByCreator(id)
+    .then(jobs => {
+      res.status(200).json(jobs)
+    })
+    .catch(err => {
+      res.status(200).json({
+        message: "You have not posted any jobs"
+      })
+    })
+})
+
 // Find job by id
 router.get('/:id', (req, res) => {
   const [id] = req.params.id;
@@ -38,9 +52,12 @@ router.get('/:id', (req, res) => {
 
 // Create job
 router.post('/', authenticate, (req, res) => {
-  const creatorId = req.dJwt.id;
+  const creator = req.dJwt;
   const job = req.body;
-  Jobs.createJob(creatorId, job)
+
+  console.log(creator);
+
+  Jobs.createJob(creator.user_id, job)
     .then(created => {
       res.status(201).json(created)
     })
