@@ -2,7 +2,7 @@ const db = require('../data/dbConfig.js');
 
 const filterFind = (filter) => {
   return db('jobs')
-    .where({filter});
+    .where(filter);
 }
 
 const findById = id => {
@@ -11,7 +11,11 @@ const findById = id => {
     .first();
 }
 
-
+const findJobsByCreator = id => {
+  // id = creator_id
+  return db('jobs')
+    .where({creator: id})
+}
 
 const createJob = async (creatorId, job) => {
   job.creator = creatorId;
@@ -39,6 +43,7 @@ const removeJob = async id => {
 module.exports = {
   filterFind,
   findById,
+  findJobsByCreator,
   createJob,
   updateJob,
   removeJob
