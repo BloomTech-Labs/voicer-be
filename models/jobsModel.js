@@ -21,9 +21,9 @@ const createJob = async (creatorId, job) => {
   return findById(id);
 }
 
-const updateJob = async (id, job) => {
+const updateJob = async (jobId, job) => {
   const [id] = await db('jobs')
-    .where({id})
+    .where({id: jobId})
     .first()
     .update(job)
     .returning('id');

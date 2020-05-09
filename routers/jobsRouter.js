@@ -37,7 +37,7 @@ router.get('/:id', (req, res) => {
 })
 
 // Create job
-router.post('/', (req, res) => {
+router.post('/', authenticate, (req, res) => {
   const creatorId = req.dJwt.id;
   const job = req.body;
   Jobs.createJobs(creatorId, job)
@@ -53,7 +53,7 @@ router.post('/', (req, res) => {
 })
 
 // Update job
-router.put('/:id', (req, res) => {
+router.put('/:id', authenticate, (req, res) => {
   const [id] = req.params.id;
   const job = req.body;
   Jobs.findById(id)
@@ -78,7 +78,7 @@ router.put('/:id', (req, res) => {
 })
 
 // Remove a job
-router.delete('/:id', (req, res) => {
+router.delete('/:id', authenticate, (req, res) => {
   const [id] = req.params.id;
   Jobs.findById(id)
     .then(
