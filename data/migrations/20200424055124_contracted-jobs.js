@@ -4,11 +4,14 @@ exports.up = function(knex) {
     table
       .increments();
     table
-      .integer('contractor_id')
+      .string('display_name')
       .notNullable();
     table
       .integer('job_id')
       .notNullable();
+    table
+      .string('application_status')
+      .defaultTo('submitted');
   })
 };
 
