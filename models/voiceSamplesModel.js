@@ -17,6 +17,11 @@ const findById = async id => {
   return sample;
 }
 
+const findByIdSimple = id => {
+  return db('voice_samples')
+    .where({id});
+}
+
 const findAll = async () => {
   const samples = await db('voice_samples')
     .select('id', 'title', 'description', 'rating', 's3_location');
@@ -35,7 +40,7 @@ const addSample = async (data) => {
   const [id] = await db('voice_samples')
     .insert(data)
     .returning('id');
-  return findById(id);
+  return findByIdSimple(id);
 }
 
 const updateSample = async (data) => {
@@ -55,6 +60,7 @@ const removeSample = async (id) => {
 module.exports = {
   find,
   findById,
+  findByIdSimple,
   addSample,
   updateSample,
   removeSample
