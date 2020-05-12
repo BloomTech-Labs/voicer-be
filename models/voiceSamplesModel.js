@@ -13,7 +13,7 @@ const find = async (id) => {
 const findById = async id => {
   let sample = await db('voice_samples')
     .where({id});
-  sample.attributes - await avs.findAll(sample.id);
+  sample.attributes = await avs.findAll(sample.id);
   return sample;
 }
 
