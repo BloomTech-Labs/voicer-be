@@ -3,6 +3,7 @@ const router = express.Router();
 const authenticate = require('../middleware/authenticate.js');
 
 const Jobs = require('../models/jobsModel.js');
+const Apply = require('../models/applicationsModel.js');
 
 // Find all jobs
 router.get('/', (req, res) => {
@@ -49,6 +50,28 @@ router.get('/:id', (req, res) => {
       })
     })
 })
+
+// Retrieve all applications to a job
+router.post('/:id/applicants', (req, res) => {
+  const [id] = req.params.id;
+  if(id) {
+    Apply.findJobApps(id)
+      .then(list => {
+        res.status(200).json(list);
+      })
+      .catch(err => {
+        res.status(500).json({
+          message: "Nobody has applied to this job",
+          error: err.message
+        })
+      })
+  } else {
+    res.status(400).json({
+      message: "You must supply a job id"
+    })
+  }
+})
+
 
 // Create job
 router.post('/', authenticate, (req, res) => {
