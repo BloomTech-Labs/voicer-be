@@ -27,6 +27,19 @@ server.use('/api/attribute', attributesRouter);
 server.use('/api/jobs', jobsRouter);
 server.use('/api/jobs/apply', authenticate, applicationsRouter);
 
+const AWS = require('aws-sdk');
+
+AWS.config.getCredentials(err => {
+  if (err) {
+    console.log(err.stack);
+  } else {
+    console.log("Access key: ", AWS.config.credentials.accessKeyId);
+    console.log("Secret access key: ", AWS.config.credentials.secretAccessKey);
+  }
+})
+
+console.log("Region: ", AWS.config.region);
+
 server.get("/", (req, res) => {
     res.status(200).json({ api: "up" });
   });
