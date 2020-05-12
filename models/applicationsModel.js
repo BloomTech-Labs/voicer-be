@@ -34,7 +34,7 @@ const applyToJob = async (jobID) => {
 
 // Rescind application
 const rescindApp = (jobID) => {
-  return await db('contracted_jobs')
+  return db('contracted_jobs')
     .where({job_id: jobID})
     .del()
 }
