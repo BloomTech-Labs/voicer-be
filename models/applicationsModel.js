@@ -49,8 +49,8 @@ const rejectUser = async (id) => {
   return await setAppStatus(id, "rejected");
 }
 
-const setAppStatus = async (id, status) => {
-  const cont_job = await findAppById(id);
+const setAppStatus = async (appID, status) => {
+  const cont_job = await findAppById(appID);
   cont_job.application_status = status;
   const [id] = await db('contracted_jobs')
     .where({id})
