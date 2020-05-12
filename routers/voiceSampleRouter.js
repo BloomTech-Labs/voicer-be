@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const authenticate = require('../middleware/authenticate.js');
 
+const AWS = require('aws-sdk');
+const s3_handler = require('../aws/s3_handler.js');
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+
 const voiceSample = require('../models/voiceSamplesModel.js');
 
 // Get a list of voice samples for the specified user
@@ -22,13 +27,17 @@ router.get('/:id', (req, res) => {
 // Add a voice sample
 router.post('/', authenticate, (req, res) => {
   const token = req.dJwt;
-  const {title, description, s3_location} = req.body;
+  const {title, description} = req.body;
+
+  const s3_location = s3_handler();
+
   const sample = {
     owner: token.user_id,
     title: title,
     description: description,
     s3_location: s3_location
   }
+
   voiceSample.addSample(sample)
     .then(saved => {
       res.status(201).json(saved)
