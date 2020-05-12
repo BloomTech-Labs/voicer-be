@@ -11,12 +11,13 @@ const findById = id => {
     .first();
 }
 
+// Find jobs by poster
 const findJobsByCreator = id => {
-  // id = creator_id
   return db('jobs')
     .where({creator: id})
 }
 
+// Create job
 const createJob = async (creatorId, job) => {
   job.creator = creatorId;
   const [id] = await db('jobs')
@@ -25,6 +26,7 @@ const createJob = async (creatorId, job) => {
   return findById(id);
 }
 
+// Update specified job
 const updateJob = async (jobId, job) => {
   const [id] = await db('jobs')
     .where({id: jobId})
@@ -39,6 +41,8 @@ const removeJob = async id => {
     .where({id})
     .del();
 }
+
+
 
 module.exports = {
   filterFind,
