@@ -1,11 +1,5 @@
 const AWS = require('aws-sdk');
-const uui = require('uuid');
-
-// AWS.config.update({
-//   region: process.env.AWSRegion,
-//   accessKeyId: process.env.AWSAccessKeyId,
-//   secretAccessKey: process.env.AWSSecretKey
-// })
+const uuid = require('uuid');
 
 const S3_bucket = process.env.S3_BUCKET;
 
@@ -27,11 +21,10 @@ exports.sign_s3 = (req, res) => {
       console.log(err);
       res.json({ success: false, error: err });
     }
-
-    const returnData = {
+    console.log("In s3_handler: ", data);
+    return {
       signedRequest: data,
       url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
     };
-    res.json({ success: true, data: { returnData } });
   });
 };
