@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const AWS = require('aws-sdk');
 const cors = require('cors');
 const checkToken = require('../middleware/checkToken.js');
 const authenticate = require('../middleware/authenticate.js');
@@ -26,6 +27,23 @@ server.use('/api/avs', avsRouter);
 server.use('/api/attribute', attributesRouter);
 server.use('/api/jobs', jobsRouter);
 server.use('/api/jobs/apply', authenticate, applicationsRouter);
+
+AWS.config.update({
+  region: process.env.AWSRegion,
+  accessKeyId: process.env.AWSAccessKeyId,
+  secretAccessKey: process.env.AWSSecretKey
+})
+
+AWS.config.getCredentials(err => {
+  if (err) {
+    console.log(err.stack);
+  } else {
+    console.log("Access key: ", AWS.config.credentials.accessKeyId);
+    console.log("Secret access key: ", AWS.config.credentials.secretAccessKey);
+  }
+})
+
+console.log("Region: ", AWS.config.region);
 
 server.get("/", (req, res) => {
     res.status(200).json({ api: "up" });

@@ -1,21 +1,37 @@
 const AWS = require('aws-sdk');
 const uui = require('uuid');
 
-AWS.config.update({
-  region: process.env.AWSRegion,
-  accessKeyId: process.env.AWSAccessKeyId,
-  secretAccessKey: process.env.AWSSecretKey
-})
+// AWS.config.update({
+//   region: process.env.AWSRegion,
+//   accessKeyId: process.env.AWSAccessKeyId,
+//   secretAccessKey: process.env.AWSSecretKey
+// })
 
-const S3_bucket = process.env.S3_bucket;
+const S3_bucket = process.env.S3_BUCKET;
 
-AWS.config.getCredentials(err => {
-  if (err) {
-    console.log(err.stack);
-  } else {
-    console.log("Access key: ", AWS.config.credentials.accessKeyId);
-    console.log("Secret access key: ", AWS.config.credentials.secretAccessKey);
-  }
-})
+exports.sign_s3 = (req, res) => {
+  const s3 = new AWS.S3();
+  const fileName = req.body.fileName;
+  const fileType = req.body.fileType;
 
-console.log("Region: ", AWS.config.region);
+  const s3Params = {
+    Bucket: S3_BUCKET,
+    Key: fileName,
+    Expires: 500,
+    ContentType: fileType,
+    ACL: "public-read"
+  };
+
+  s3.getSignedUrl('putObject', s3Params, (err, data) => {
+    if(err) {
+      console.log(err);
+      res.json({ success: false, error: err });
+    }
+
+    const returnData = {
+      signedRequest: data,
+      url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
+    };
+    res.json({ success: true, data: { returnData } });
+  });
+};
