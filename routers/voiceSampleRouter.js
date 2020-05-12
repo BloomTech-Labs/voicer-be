@@ -1,13 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const authenticate = require('../middleware/authenticate.js');
-
-const AWS = require('aws-sdk');
-const s3_handler = require('../aws/s3_handler.js');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
+const AWS = require('aws-sdk');
 
 const voiceSample = require('../models/voiceSamplesModel.js');
+
+const s3 = new AWS.S3();
+
+const uploadS3 = multer({
+  storage: multerS3({
+    s3: s3,
+    acl: 'public-read',
+    bucket: process.env.S3_BUCKET,
+    metadata: (req, file, cb) => {
+      cb(null, {fieldName: file.fieldname})
+    },
+    key: (req, file, cb) => {
+      cb(null, Date.now().toString() + '-' + file.originalname)
+    }
+  })
+})
 
 // Get a list of voice samples for the specified user
 router.get('/:id', (req, res) => {
@@ -25,18 +39,21 @@ router.get('/:id', (req, res) => {
 })
 
 // Add a voice sample
-router.post('/', authenticate, (req, res) => {
+router.post('/', authenticate, uploadS3.single('file'), (req, res) => {
+
+  console.log(req.file.location);
+
   const token = req.dJwt;
   const {title, description} = req.body;
-
-  const s3_location = s3_handler();
 
   const sample = {
     owner: token.user_id,
     title: title,
     description: description,
-    s3_location: s3_location
+    s3_location: req.file.location
   }
+
+  console.log(sample);
 
   voiceSample.addSample(sample)
     .then(saved => {
