@@ -48,7 +48,7 @@ router.get('/:id', (req, res) => {
 router.put('/:id', /*checkAccountOwner() ,*/ (req, res) => {
     const id = req.params.id;
     const user = req.body;
-    Users.findBasic({id: id})
+    Users.findById(id)
         .then(
             Users.updateUser(id, user)
                 .then(updated => {
@@ -61,12 +61,12 @@ router.put('/:id', /*checkAccountOwner() ,*/ (req, res) => {
                     })
                 })
         )
-        .catch(
+        .catch(err => {
             res.status(500).json({
                 message: `Could not find user with ID: ${id}`,
                 error: err.message
             })
-        )
+        })
 })
 
 // Deactivate user
