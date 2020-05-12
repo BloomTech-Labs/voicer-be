@@ -2,12 +2,15 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const checkToken = require('../middleware/checkToken.js');
+const authenticate = require('../middleware/authenticate.js');
 
 const authRouter = require('../routers/auth-router.js');
 const userRouter = require('../routers/userRouter.js');
 const voiceSampleRouter = require('../routers/voiceSampleRouter.js');
 const avsRouter = require('../routers/avsRouter.js');
 const attributesRouter = require('../routers/attributeRouter.js');
+const jobsRouter = require('../routers/jobsRouter.js');
+const applicationsRouter = require('../routers/applicationsRouter.js');
 
 const server = express();
 
@@ -21,6 +24,8 @@ server.use('/api/users', userRouter);
 server.use('/api/voice', voiceSampleRouter);
 server.use('/api/avs', avsRouter);
 server.use('/api/attribute', attributesRouter);
+server.use('/api/jobs', jobsRouter);
+server.use('/api/jobs/apply', authenticate, applicationsRouter);
 
 server.get("/", (req, res) => {
     res.status(200).json({ api: "up" });

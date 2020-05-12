@@ -9,6 +9,7 @@ module.exports = (req, res, next) => {
                 res.status(401).json({ error: err });
             } else {
                 if (dJwt.expiresIn < minutes(20)) {
+                    req.dJwt = dJwt;
                     res.token = createToken(dJwt.user_id);
                 }
             }
