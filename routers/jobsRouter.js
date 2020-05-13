@@ -7,6 +7,7 @@ const Apply = require('../models/applicationsModel.js');
 
 // Find all jobs
 router.get('/', (req, res) => {
+  console.log(req.query);
   Jobs.filterFind(req.query)
     .then(found => {
       res.status(200).json({
