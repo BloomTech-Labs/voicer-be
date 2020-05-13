@@ -1,6 +1,7 @@
 const db = require('../data/dbConfig.js');
 
 const filterFind = (filter) => {
+  console.log(filter);
   return db('jobs')
     .where(filter);
 }
