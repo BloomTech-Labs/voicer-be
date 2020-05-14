@@ -19,6 +19,19 @@ module.exports = {
     }
   },
 
+  test: {
+    client: 'pg',
+    connection: {
+      database: 'voicer',
+      user:     'postgres',
+      password: ''
+    },
+    useNullAsDefault: true,
+    migrations: {
+      directory: './data/migrations'
+    }
+  },
+
   production: {
     client: 'pg',
     connection: process.env.DATABASE_URL + '?ssl=true',
