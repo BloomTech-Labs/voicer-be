@@ -41,8 +41,6 @@ router.get('/:id', (req, res) => {
 // Add a voice sample
 router.post('/', authenticate, uploadS3.single('file'), (req, res) => {
 
-  console.log(req.file);
-
   const token = req.dJwt;
   const {title, description} = req.body;
 
