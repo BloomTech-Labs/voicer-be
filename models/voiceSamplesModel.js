@@ -1,6 +1,13 @@
 const db = require('../data/dbConfig.js');
 const avs = require('./attrVoiceSampleModel.js');
 
+const tnj = async () => {
+  const data = await db('voice_samples as vs')
+    .select('vs.id');
+  console.log(data);
+  return data;
+}
+
 const find = async (id) => {
   // Find all voice samples where id = user.id
   let samples = await db('voice_samples')
@@ -52,12 +59,25 @@ const updateSample = async (data) => {
 }
 
 const removeSample = async (id) => {
+  const relations = await db('attributes_voice_samples')
+    .where({voice_sample_id: id})
+    .select('id');
+
+  deleteRelations(relations);
+
   return await db('voice_samples')
     .where({id})
     .del();
 }
 
+const deleteRelations = async (relations) => {
+  return Promise.all(relations.map(async relation => {
+    return avs.remove(relation);
+  }));
+}
+
 module.exports = {
+  tnj,
   find,
   findById,
   findByIdSimple,
