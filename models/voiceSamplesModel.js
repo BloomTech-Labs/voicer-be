@@ -1,19 +1,13 @@
 const db = require('../data/dbConfig.js');
 const avs = require('./attrVoiceSampleModel.js');
+const attributes = require('./attributesModel.js');
 
-const tnj = async () => {
-  const data = await db('voice_samples as vs')
-    .select('vs.id');
-  console.log(data);
-  return data;
-}
-
+// Find all voice samples where id = user.id
 const find = async (id) => {
-  // Find all voice samples where id = user.id
+  // Retrieve all voice samples for user
   let samples = await db('voice_samples')
     .where({owner: id})
-    .select('id', "title", "description", "rating", "s3_location")
-  
+
   return findAttributes(samples);
 }
 
@@ -29,6 +23,35 @@ const findByIdSimple = id => {
     .where({id});
 }
 
+const findByFilter = async (filter) => {
+  
+  let samples = await db('voice_samples as vs')
+    .join(
+      'attributes_voice_samples as avs',
+      'avs.voice_sample_id', '=', 'vs.id')
+    .join(
+      'attributes as attr',
+      'attr.id', '=', 'avs.attribute_id')
+    .select([
+      'vs.id',
+      'vs.owner',
+      'vs.title',
+      'vs.description',
+      'vs.s3_location',
+      db.raw('ARRAY_AGG(attr.title) as tags')
+    ])
+    .groupBy('vs.id')
+
+  let checker = (arr, target) => target.every(v => arr.includes(v));
+
+  samples = samples.filter(sample => {
+    return checker(sample.tags, filter);
+  })
+
+  return samples;
+}
+
+// ** CLEANUP **
 const findAll = async () => {
   const samples = await db('voice_samples')
     .select('id', 'title', 'description', 'rating', 's3_location');
@@ -77,10 +100,10 @@ const deleteRelations = async (relations) => {
 }
 
 module.exports = {
-  tnj,
   find,
   findById,
   findByIdSimple,
+  findByFilter,
   addSample,
   updateSample,
   removeSample
