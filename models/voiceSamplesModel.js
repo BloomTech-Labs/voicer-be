@@ -4,66 +4,42 @@ const attributes = require('./attributesModel.js');
 
 // Find all voice samples where id = user.id
 const find = async (id) => {
-  // Retrieve all voice samples for user
-  let samples = await db('voice_samples')
+  let samples = await db('voice_samples as vs')
     .where({owner: id})
-
-  return findAttributes(samples);
+    .join(
+      'attributes_voice_samples as avs',
+      'avs.voice_sample_id', '=', 'vs.id'
+    )
+    .join(
+      'attributes as attr',
+      'attr.id', '=', 'avs.attribute_id'
+    )
+    .select([
+      'vs.id',
+      db.raw('ARRAY_AGG(attr.title) as tags')
+    ])
+    .groupBy('vs.id')
+  return samples;
 }
 
 const findById = async id => {
-  let sample = await db('voice_samples')
-    .where({id});
-  sample.attributes = await avs.findAll(sample.id);
-  return sample;
-}
-
-const findByIdSimple = id => {
-  return db('voice_samples')
-    .where({id});
-}
-
-const findByFilter = async (filter) => {
-  
-  let samples = await db('voice_samples as vs')
+  let sample = await db('voice_samples as vs')
+    .where({id})
     .join(
       'attributes_voice_samples as avs',
-      'avs.voice_sample_id', '=', 'vs.id')
+      'avs.voice_sample_id', '=', 'vs.id'
+    )
     .join(
       'attributes as attr',
-      'attr.id', '=', 'avs.attribute_id')
+      'attr.id', '=', 'avs.attribute_id'
+    )
     .select([
-      'vs.id',
-      'vs.owner',
-      'vs.title',
-      'vs.description',
-      'vs.s3_location',
+      'vs',
       db.raw('ARRAY_AGG(attr.title) as tags')
     ])
     .groupBy('vs.id')
 
-  let checker = (arr, target) => target.every(v => arr.includes(v));
-
-  samples = samples.filter(sample => {
-    return checker(sample.tags, filter);
-  })
-
-  return samples;
-}
-
-// ** CLEANUP **
-const findAll = async () => {
-  const samples = await db('voice_samples')
-    .select('id', 'title', 'description', 'rating', 's3_location');
-
-  return findAttributes(samples);
-}
-
-const findAttributes = async samples => {
-  return Promise.all(samples.map(async sample => {
-    sample.attributes = await avs.findAll(sample.id);
-    return sample;
-  }))
+  return sample;
 }
 
 const addSample = async (data) => {
@@ -102,8 +78,6 @@ const deleteRelations = async (relations) => {
 module.exports = {
   find,
   findById,
-  findByIdSimple,
-  findByFilter,
   addSample,
   updateSample,
   removeSample
