@@ -20,7 +20,6 @@ const findBasic = async (filter) => {
 }
 
 const findByEmail = (email) => {
-  console.log(email)
   return db('users')
     .where({
         email,
