@@ -7,34 +7,33 @@ const checkRole = require('../middleware/checkRole.js');
 const voiceSample = require('../models/voiceSamplesModel.js');
 const Users = require('../models/userModel.js');
 
-// Find all users
-// router.get('/', (req, res) => {
-//     Users.findBasic(req.query)
-//         .then(users => {
-//             res.status(200).json(users);
-//         })
-//         .catch(err => {
-//             console.log(err)
-//             res.status(400).json({
-//                 error: err
-//             });
-//         });
-// });
-
-// Get a list of voice samples by attributes tags
+// Get a list of voice samples by attributes tags if query present
 router.get('/', (req, res) => {
-    query = req.query.tag.split(',');
-    Users.findBySampleFilter(query)
-      .then(userList => {
-        res.status(200).json(userList)
-      })
-      .catch(err => {
-        res.status(500).json({
-          message: `Could not find users with samples that contain: ${query}`,
-          error: err.message
-        })
-      })
-  })
+    if(req.query.tag) {
+        query = req.query.tag.split(',');
+        Users.findBySampleFilter(query)
+            .then(userList => {
+                res.status(200).json(userList)
+            })
+            .catch(err => {
+                res.status(500).json({
+                    message: `Could not find users with samples that contain: ${query}`,
+                    error: err.message
+                })
+            })
+    } else {
+        Users.findAll()
+            .then(userList => {
+                res.status(200).json(userList)
+            })
+            .catch( err => {
+                res.status(500).json({
+                    message: 'Error retrieving users',
+                    error: err.message
+                })
+            })
+    }
+})
 
 // List all inactive users. Must be an admin
 router.get('/inactive', /* checkAdmin() */ (req, res) => {
