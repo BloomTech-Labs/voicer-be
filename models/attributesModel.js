@@ -1,10 +1,5 @@
 const db = require('../data/dbConfig.js');
 
-const find = (filter) => {
-  return db('attributes')
-    .where(filter);
-}
-
 const findById = (id) => {
   return db('attributes')
     .where({id})
@@ -34,7 +29,6 @@ const remove = async (id) => {
 }
 
 module.exports = {
-  find,
   findById,
   add,
   edit,

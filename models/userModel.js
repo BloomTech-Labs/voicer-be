@@ -2,30 +2,49 @@ const db = require('../data/dbConfig.js');
 const voice = require('./voiceSamplesModel.js');
 
 // find by id
-const findById = id => {
-  return db('users')
+const findById = async id => {
+  const user = await db('users')
     .where({id})
     .first();
+  user.samples = await voice.find(id);
+  return user;
 }
 
-// Returns all users
-const findBasic = async (filter) => {
-  filter.active = true;
-  let users = await db('users')
-		.where(filter);
-	return Promise.all(users.map(async user => {
-		user.samples = await voice.find(user.id);
-		return user;
-	}))
+const findBySampleFilter = async (filter) => {
+  
+  let samples = await db('voice_samples as vs')
+    .join(
+      'attributes_voice_samples as avs',
+      'avs.voice_sample_id', '=', 'vs.id'
+    )
+    .join(
+      'attributes as attr',
+      'attr.id', '=', 'avs.attribute_id'
+    )
+    .select([
+      'vs.id',
+      'vs.owner',
+      db.raw('ARRAY_AGG(attr.title) as tags')
+    ])
+    .groupBy('vs.id')
+
+  let checker = (arr, target) => target.every(v => arr.includes(v));
+
+  samples = samples.filter(sample => {
+    return checker(sample.tags, filter);
+  })
+
+  return Promise.all(samples.map(async sample => {
+    return await findById(sample.owner);
+  }))
 }
 
-const findByEmail = (email) => {
-  return db('users')
-    .where({
-        email,
-        active: true
-    })
-    .first()
+const findByEmail = async email => {
+  const user = await db('users')
+    .where(email)
+    .first();
+  user.samples = await voice.find(id);
+  return user;
 }
 
 // Returns an array of all deactivated users
@@ -81,9 +100,9 @@ const toggleActive = async user => {
 }
 
 module.exports = {
-  findBasic,
   findById,
   findByEmail,
+  findBySampleFilter,
   addUser,
   updateUser,
   deactivateUser,

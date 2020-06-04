@@ -8,18 +8,33 @@ const voiceSample = require('../models/voiceSamplesModel.js');
 const Users = require('../models/userModel.js');
 
 // Find all users
+// router.get('/', (req, res) => {
+//     Users.findBasic(req.query)
+//         .then(users => {
+//             res.status(200).json(users);
+//         })
+//         .catch(err => {
+//             console.log(err)
+//             res.status(400).json({
+//                 error: err
+//             });
+//         });
+// });
+
+// Get a list of voice samples by attributes tags
 router.get('/', (req, res) => {
-    Users.findBasic(req.query)
-        .then(users => {
-            res.status(200).json(users);
+    query = req.query.tag.split(',');
+    Users.findBySampleFilter(query)
+      .then(userList => {
+        res.status(200).json(userList)
+      })
+      .catch(err => {
+        res.status(500).json({
+          message: `Could not find users with samples that contain: ${query}`,
+          error: err.message
         })
-        .catch(err => {
-            console.log(err)
-            res.status(400).json({
-                error: err
-            });
-        });
-});
+      })
+  })
 
 // List all inactive users. Must be an admin
 router.get('/inactive', /* checkAdmin() */ (req, res) => {
@@ -31,9 +46,8 @@ router.get('/inactive', /* checkAdmin() */ (req, res) => {
 // Find user by ID
 router.get('/:id', (req, res) => {
     const id = Number(req.params.id);
-    Users.findBasic({id: id})
+    Users.findById(id)
         .then(user => {
-            user.samples = voiceSample.find(id);
             res.status(200).json(user);
         })
         .catch(err => {

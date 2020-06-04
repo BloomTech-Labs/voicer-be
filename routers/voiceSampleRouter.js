@@ -23,23 +23,6 @@ const uploadS3 = multer({
   })
 })
 
-
-
-// Get a list of voice samples by attributes tags
-router.get('/', (req, res) => {
-  query = req.query.tag.split(',');  
-  voiceSample.findByFilter(query)
-    .then(samples => {
-      res.status(200).json(samples)
-    })
-    .catch(err => {
-      res.status(500).json({
-        message: `Could not find samples that match: ${query}`,
-        error: err.message
-      })
-    })
-})
-
 // Get a list of voice samples for the specified user
 router.get('/:id', (req, res) => {
   // ID is the id of the user
