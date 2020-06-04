@@ -1,17 +1,43 @@
 const db = require('../data/dbConfig.js');
 const voice = require('./voiceSamplesModel.js');
 
+// retrieve all users
+const findAll = async () => {
+  const users = await db('users')
+    .select(
+      'id', 'email',
+      'first_name', 'last_name',
+      'display_name', 'payrate',
+      'location', 'jobsCompleted',
+      'bio', 'average_rating',
+      'account_balance', 'active'
+    )
+  return Promise.all(users.map(async user => {
+    user.samples = await voice.find(user.id)
+    return user;
+  }))
+}
+
 // find by id
 const findById = async id => {
   const user = await db('users')
     .where({id})
-    .first();
+    .first()
+    .select(
+      'id', 'email',
+      'first_name', 'last_name',
+      'display_name', 'payrate',
+      'location', 'jobsCompleted',
+      'bio', 'average_rating',
+      'account_balance', 'active'
+    );
   user.samples = await voice.find(id);
   return user;
 }
 
 const findBySampleFilter = async (filter) => {
   
+  // Retrieve samples with attributes
   let samples = await db('voice_samples as vs')
     .join(
       'attributes_voice_samples as avs',
@@ -28,14 +54,25 @@ const findBySampleFilter = async (filter) => {
     ])
     .groupBy('vs.id')
 
+  // Check samples against filter
   let checker = (arr, target) => target.every(v => arr.includes(v));
 
+  // Filter out samples that don't match
   samples = samples.filter(sample => {
     return checker(sample.tags, filter);
   })
 
-  return Promise.all(samples.map(async sample => {
-    return await findById(sample.owner);
+  // Store list of user id's
+  let userIds = samples.map(sample => {
+    return sample.owner;
+  })
+
+  // Remove duplicate values
+  userIds = [...new Set(userIds)];
+
+  // Return list of users that match the filtered samples
+  return Promise.all(userIds.map(async userId => {
+    return await findById(userId);
   }))
 }
 
@@ -100,6 +137,7 @@ const toggleActive = async user => {
 }
 
 module.exports = {
+  findAll,
   findById,
   findByEmail,
   findBySampleFilter,
