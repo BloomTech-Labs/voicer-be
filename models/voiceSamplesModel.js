@@ -16,6 +16,10 @@ const find = async (id) => {
     )
     .select([
       'vs.id',
+      'vs.title',
+      'vs.description',
+      'vs.rating',
+      'vs.s3_location',
       db.raw('ARRAY_AGG(attr.title) as tags')
     ])
     .groupBy('vs.id')
