@@ -78,9 +78,17 @@ const findBySampleFilter = async (filter) => {
 
 const findByEmail = async email => {
   const user = await db('users')
-    .where(email)
+    .where({email})
     .first();
-  user.samples = await voice.find(id);
+  user.samples = await voice.find(user.id);
+  return user;
+}
+
+const findByDisplayName = async display_name => {
+  const user = await db('users')
+    .where({display_name})
+    .first();
+  user.samples = await voice.find(user.id);
   return user;
 }
 
@@ -141,6 +149,7 @@ module.exports = {
   findById,
   findByEmail,
   findBySampleFilter,
+  findByDisplayName,
   addUser,
   updateUser,
   deactivateUser,
