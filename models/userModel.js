@@ -36,7 +36,7 @@ const findById = async id => {
 }
 
 const findBySampleFilter = async (filter) => {
-  
+  filter = filter.charAt(0).toUpperCase();
   // Retrieve samples with attributes
   let samples = await db('voice_samples as vs')
     .join(
@@ -47,6 +47,7 @@ const findBySampleFilter = async (filter) => {
       'attributes as attr',
       'attr.id', '=', 'avs.attribute_id'
     )
+    .where('attr.title', 'like', `%${filter}%`)
     .select([
       'vs.id',
       'vs.owner',
@@ -54,13 +55,15 @@ const findBySampleFilter = async (filter) => {
     ])
     .groupBy('vs.id')
 
-  // Check samples against filter
-  let checker = (arr, target) => target.every(v => arr.includes(v));
+  console.log(samples);
 
-  // Filter out samples that don't match
-  samples = samples.filter(sample => {
-    return checker(sample.tags, filter);
-  })
+  // // Check samples against filter
+  // let checker = (arr, target) => target.every(v => arr.includes(v));
+
+  // // Filter out samples that don't match
+  // samples = samples.filter(sample => {
+  //   return checker(sample.tags, filter);
+  // })
 
   // Store list of user id's
   let userIds = samples.map(sample => {
