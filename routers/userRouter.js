@@ -21,6 +21,17 @@ router.get('/', (req, res) => {
                     error: err.message
                 })
             })
+    } else if(req.query.display_name) {
+        Users.findByDisplayName(req.query.display_name)
+            .then(user => {
+                res.status(200).json(user);
+            })
+            .catch(err => {
+                res.status(500).json({
+                    message: `Could not find user with Display Name: ${req.query.display_name}`,
+                    error: err.message
+                })
+            })
     } else {
         Users.findAll()
             .then(userList => {
