@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
     } else if(req.query.display_name) {
         Users.findByDisplayName(req.query.display_name)
             .then(user => {
-                res.status(200).json(user);
+                res.status(200).json([user]);
             })
             .catch(err => {
                 res.status(500).json({
