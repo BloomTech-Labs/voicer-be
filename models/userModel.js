@@ -35,19 +35,29 @@ const findById = async id => {
   return user;
 }
 
-const findBySampleFilter = async (filter) => {
-  filter = filter.charAt(0).toUpperCase();
-  // Retrieve samples with attributes
+// Retrieve samples with attributes
+const findBySampleFilter = async (filter, strict) => {
+  // Temporary bit here until I update the attributes to always be lower case
+  filter = filter.map(element => {
+    return element.charAt(0).toUpperCase() + element.slice(1);
+  })
+
+  // 
   let samples = await db('voice_samples as vs')
-    .join(
+    .leftOuterJoin(
       'attributes_voice_samples as avs',
       'avs.voice_sample_id', '=', 'vs.id'
     )
-    .join(
+    .rightOuterJoin(
       'attributes as attr',
       'attr.id', '=', 'avs.attribute_id'
     )
-    .where('attr.title', 'like', `%${filter}%`)
+    .where((builder) => {
+      builder.where('attr.title', 'like', `%${filter[0]}%`)
+      for(let i = 1; i < filter.length; i++) {
+        builder.orWhere('attr.title', 'like', `%${filter[i]}%`)
+      }
+    })
     .select([
       'vs.id',
       'vs.owner',
@@ -55,16 +65,15 @@ const findBySampleFilter = async (filter) => {
     ])
     .groupBy('vs.id')
 
-  console.log(samples);
-
-  // // Check samples against filter
-  // let checker = (arr, target) => target.every(v => arr.includes(v));
-
-  // // Filter out samples that don't match
-  // samples = samples.filter(sample => {
-  //   return checker(sample.tags, filter);
-  // })
-
+  if(strict) {
+    // Check samples against filter for strict adherence to filter
+    let checker = (arr, target) => target.every(v => {arr.includes(v)});
+    // Filter out samples that don't match
+    samples = samples.filter(sample => {
+      return checker(sample.tags, filter);
+    })
+  }
+  
   // Store list of user id's
   let userIds = samples.map(sample => {
     return sample.owner;
