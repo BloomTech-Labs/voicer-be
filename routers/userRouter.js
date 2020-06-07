@@ -10,7 +10,14 @@ const Users = require('../models/userModel.js');
 // Get a list of voice samples by attributes tags if query present
 router.get('/', (req, res) => {
     if(req.query.tag) {
-        Users.findBySampleFilter(req.query.tag)
+        let strict;
+        let query = req.query.tag.split(',');
+        if(req.query.strict) {
+            strict = req.query.strict
+        } else {
+            strict = false;
+        }
+        Users.findBySampleFilter(query, strict)
             .then(userList => {
                 res.status(200).json(userList)
             })
