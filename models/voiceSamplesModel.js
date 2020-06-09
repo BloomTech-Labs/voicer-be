@@ -29,6 +29,7 @@ const find = async (id) => {
 const findById = async id => {
   let sample = await db('voice_samples as vs')
     .where({id})
+    .first()
     .join(
       'attributes_voice_samples as avs',
       'avs.voice_sample_id', '=', 'vs.id'
@@ -50,7 +51,7 @@ const addSample = async (data) => {
   const [id] = await db('voice_samples')
     .insert(data)
     .returning('id');
-  return findByIdSimple(id);
+  return findById(id);
 }
 
 const updateSample = async (data) => {
