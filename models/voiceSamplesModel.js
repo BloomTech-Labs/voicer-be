@@ -27,31 +27,36 @@ const find = async (id) => {
 }
 
 const findById = async id => {
-  let sample = await db('voice_samples as vs')
+  let sample = await db('voice_samples')
     .where({id})
-    .first()
     .join(
       'attributes_voice_samples as avs',
-      'avs.voice_sample_id', '=', 'vs.id'
+      'avs.voice_sample_id', '=', 'voice_samples.id'
     )
     .join(
       'attributes as attr',
       'attr.id', '=', 'avs.attribute_id'
     )
     .select([
-      'vs',
+      'voice_samples.id',
       db.raw('ARRAY_AGG(attr.title) as tags')
     ])
-    .groupBy('vs.id')
-
+    .groupBy('voice_samples.id')
   return sample;
+}
+
+const findAfterCreate = id => {
+  return db('voice_samples')
+    .where({id})
+    .first()
 }
 
 const addSample = async (data) => {
   const [id] = await db('voice_samples')
     .insert(data)
     .returning('id');
-  return findById(id);
+  console.log("Add Sample: ", id);
+  return findAfterCreate(id);
 }
 
 const updateSample = async (data) => {
