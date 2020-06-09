@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-
 const checkRole = require('../middleware/checkRole.js');
 
+const uploadS3 = require('../common/uploadS3');
 const voiceSample = require('../models/voiceSamplesModel.js');
 const Users = require('../models/userModel.js');
 
@@ -69,6 +69,31 @@ router.get('/:id', (req, res) => {
         .catch(err => {
             res.status(400).json({
                 error: err.message
+            })
+        })
+})
+
+// Upload an avatar image
+router.post('/:id/avatar', uploadS3.single('file'), (req, res) => {
+    const token = req.dJwt;
+    Users.findById(token.user_id)
+        .then(user => {
+            user.avatar = req.file.location
+            Users.updateUser(token.user_id, user)
+                .then(updated => {
+                    res.status(200).json(updated)
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        message: "Could not update user",
+                        error: err
+                    })
+                })
+        })
+        .catch(err => {
+            res.status(500).json({
+                message: `Could not find user`,
+                error: err
             })
         })
 })
