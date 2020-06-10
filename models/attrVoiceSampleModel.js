@@ -6,14 +6,14 @@ const addAVS = async (data) => {
     .returning('id');
 }
 
-const remove = async (vsID, attrTitle) => {
+const remove = async (id, title) => {
   const attrID = await db('attributes')
-    .where({title: attrTitle})
+    .where({title})
     .first()
     .select('id')
   const relationID = await db('attributes_voice_samples as avs')
     .where({
-      voice_sample_id: vsID,
+      voice_sample_id: id,
       attribute_id: attrID.id
     })
     .first()

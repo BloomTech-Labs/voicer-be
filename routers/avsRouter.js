@@ -5,9 +5,8 @@ const AVS = require('../models/attrVoiceSampleModel.js');
 
 // remove association
 router.delete('/', (req, res) => {
-  console.log(req.body);
-  const { vsID, attrTitle } = req.body;
-  AVS.remove(vsID, attrTitle)
+  const { id, title } = req.body;
+  AVS.remove(id, title)
     .then(removed => {
       res.status(200).json(removed)
     })
