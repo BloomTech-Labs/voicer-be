@@ -2,7 +2,7 @@ const db = require('../data/dbConfig.js');
 const attribute = require('./attributesModel.js');
 
 const add = async (data) => {
-  return db('attributes_voice_samples')
+  return await db('attributes_voice_samples')
     .insert(data)
     .returning('id');
 }
