@@ -16,6 +16,7 @@ const remove = async (vsID, attrTitle) => {
       voice_sample_id: vsID,
       attribute_id: attrID.id
     })
+    .first()
     .select('id')
   return db('attributes_voice_samples')
     .where({id: relationID})
