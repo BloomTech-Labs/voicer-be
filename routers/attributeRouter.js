@@ -22,6 +22,7 @@ router.get('/', (req, res) => {
 // add an attribute
 router.post('/', /*checkRole,*/ (req, res) => {
   const data = req.body;
+  console.log(data);
   Attributes.addAttributeToSample(data)
     .then(saved => {
       res.status(200).json(saved);
