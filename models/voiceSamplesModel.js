@@ -6,23 +6,19 @@ const attributes = require('./attributesModel.js');
 const find = async (id) => {
   let samples = await db('voice_samples as vs')
     .where({owner: id})
-    .join(
-      'attributes_voice_samples as avs',
-      'avs.voice_sample_id', '=', 'vs.id'
-    )
-    .join(
-      'attributes as attr',
-      'attr.id', '=', 'avs.attribute_id'
-    )
     .select([
       'vs.id',
       'vs.title',
       'vs.description',
       'vs.rating',
-      'vs.s3_location',
-      db.raw('ARRAY_AGG(attr.title) as tags')
+      'vs.s3_location'
     ])
-    .groupBy('vs.id')
+
+  samples = Promise.all(samples.map(async sample => {
+    sample.tags = await attributes.find(sample.id)
+    return sample
+  }))
+
   return samples;
 }
 
