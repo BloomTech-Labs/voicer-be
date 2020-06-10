@@ -33,6 +33,7 @@ const createAttribute = async data => {
 }
 
 const addAttributeToSample = async (id, title) => {
+  console.log("addAttributeToSample: ", id, title);
   let attribute;
   const [attrID] = await db('attributes')
     .where({title})
