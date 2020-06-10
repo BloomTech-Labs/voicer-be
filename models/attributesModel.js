@@ -20,40 +20,36 @@ const find = async voice_sample_id => {
 const findById = (id) => {
   return db('attributes')
     .where({id})
+    .first()
     .select("id", "title")
-    .first();
 }
 
 const createAttribute = async data => {
+  const attData = {
+    title: data
+  }
   const [id] = await db('attributes')
-    .insert(data)
+    .insert(attData)
     .returning('id')
-  console.log("createAttribute: ", id, data)
   return findById(id)
 }
 
 const addAttributeToSample = async (data) => {
   const { id, title } = data;
-  console.log("addAttributeToSample: ", id, title);
   let attribute;
   const [attrID] = await db('attributes')
     .where({title})
-    .first()
     .select('id');
-  console.log("attrID: ", attrID);
   if(attrID) {
-    console.log("attrID exists")
-    attribute = await findById(attrID)
+    attribute = await findById(attrID.id)
   } else {
-    console.log("attrID does not exist")
     attribute = await createAttribute(title)
   }
   const avsData = {
-    voice_sample_id: id,
-    attribute_id: attribute.id
+    attribute_id: attribute.id,
+    voice_sample_id: id
   }
-  console.log(avsData)
-  return await avs.add(avsData);
+  return await avs.addAVS(avsData);
 }
 
 const edit = async (id, data) => {
