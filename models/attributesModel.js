@@ -40,6 +40,7 @@ const addAttributeToSample = async (data) => {
     .where({title})
     .first()
     .select('id');
+  console.log("attrID: ", attrID);
   if(attrID) {
     console.log("attrID exists")
     attribute = await findById(attrID)
