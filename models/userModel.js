@@ -118,6 +118,9 @@ const addUser = async (user) => {
   return findById(id);
 }
 
+const addAvatarToUser = async (id, avatar) => {
+}
+
 // Updates the user with the given userId
 const updateUser = async (id, user) => {
   return await db('users')
@@ -163,6 +166,7 @@ module.exports = {
   findBySampleFilter,
   findByDisplayName,
   addUser,
+  addAvatarToUser,
   updateUser,
   deactivateUser,
   reactivateUser,
