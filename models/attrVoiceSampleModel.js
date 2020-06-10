@@ -7,6 +7,7 @@ const addAVS = async (data) => {
 }
 
 const remove = async (id, title) => {
+  console.log("id, title", id, title)
   const attrID = await db('attributes')
     .where({title})
     .first()
@@ -18,6 +19,8 @@ const remove = async (id, title) => {
     })
     .first()
     .select('id')
+  console.log("attrID: ", attrID)
+  console.log("relationID: ", relationID)
   return db('attributes_voice_samples')
     .where({id: relationID.id})
     .del()
