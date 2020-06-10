@@ -6,10 +6,19 @@ const addAVS = async (data) => {
     .returning('id');
 }
 
-const remove = async (id) => {
-  return await db('attributes_voice_samples')
-    .where({id})
-    .del
+const remove = async (vsID, attrTitle) => {
+  const attrID = await db('attributes')
+    .where({title: attrTitle})
+    .first()
+    .select('id')
+  const relationID = await db('attributes_voice_samples as avs')
+    .where({
+      voice_sample_id: vsID,
+      attribute_id: attrID.id
+    })
+  return db('attributes_voice_samples')
+    .where({id: relationID})
+    .del()
 }
 
 module.exports = {
