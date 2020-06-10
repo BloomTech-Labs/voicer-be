@@ -28,6 +28,7 @@ const createAttribute = async data => {
   const [id] = await db('attributes')
     .insert(data)
     .returning('id')
+  console.log("createAttribute: ", id, data)
   return findById(id)
 }
 
@@ -38,14 +39,17 @@ const addAttributeToSample = async (id, title) => {
     .first()
     .select('id');
   if(attrID) {
+    console.log("attrID exists")
     attribute = await findById(attrID)
   } else {
+    console.log("attrID does not exist")
     attribute = await createAttribute(title)
   }
   const avsData = {
     voice_sample_id: id,
     attribute_id: attribute.id
   }
+  console.log(avsData)
   return await avs.add(avsData);
 }
 
