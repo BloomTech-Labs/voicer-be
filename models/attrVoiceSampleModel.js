@@ -19,7 +19,7 @@ const remove = async (vsID, attrTitle) => {
     .first()
     .select('id')
   return db('attributes_voice_samples')
-    .where({id: relationID})
+    .where({id: relationID.id})
     .del()
 }
 
