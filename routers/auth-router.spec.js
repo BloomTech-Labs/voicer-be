@@ -57,7 +57,7 @@ describe('auth-router.js', () => {
       })
       .set('Accept', 'application/json');
     
-    expect(res.body.token).toEqual(token);
+    expect([res.body.token.display_name, res.body.token.email]).toEqual([token.display_name, token.email]);
   })
 
   it('should not accept a wrong password', async () => {
