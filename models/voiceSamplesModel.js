@@ -22,22 +22,25 @@ const find = async (id) => {
   return samples;
 }
 
+const findAll = () => {
+  return db('voice_samples')
+    .join(
+      'users',
+      'voice_samples.owner', '=', 'users.id'
+    )
+    .select(
+      'users.id as user_id',
+      'users.display_name as user',
+      'voice_samples.id as sample_id',
+      'voice_samples.title as sample_title'
+    )
+}
+
 const findById = async id => {
   let sample = await db('voice_samples')
     .where({id})
-    .join(
-      'attributes_voice_samples as avs',
-      'avs.voice_sample_id', '=', 'voice_samples.id'
-    )
-    .join(
-      'attributes as attr',
-      'attr.id', '=', 'avs.attribute_id'
-    )
-    .select([
-      'voice_samples.id',
-      db.raw('ARRAY_AGG(attr.title) as tags')
-    ])
-    .groupBy('voice_samples.id')
+    .first()
+  sample.tags = await attributes.find(id)
   return sample;
 }
 
@@ -63,27 +66,31 @@ const updateSample = async (data) => {
   return findById(id);
 }
 
-const removeSample = async (id) => {
-  const relations = await db('attributes_voice_samples')
-    .where({voice_sample_id: id})
-    .select('id');
-
-  deleteRelations(relations);
-
-  return await db('voice_samples')
+// Function to remove a voice sample and all associations
+const removeSample = async (id, tags) => {
+  // Go through list of tags and delete associations in
+  //   the intermediary table
+  let deleted_tags = await Promise.all(tags.map(async tag => {
+    await avs.remove(id, tag)
+    return tag
+  }))
+  // Delete sample
+  await db('voice_samples')
     .where({id})
-    .del();
-}
-
-const deleteRelations = async (relations) => {
-  return Promise.all(relations.map(async relation => {
-    return avs.remove(relation);
-  }));
+    .first()
+    .del()
+  deleted_message = {
+    message: `Deleted voice sample with ID: ${id}`,
+    tags: deleted_tags
+  }
+  return deleted_message
 }
 
 module.exports = {
   find,
   findById,
+  findAll,
+  findAfterCreate,
   addSample,
   updateSample,
   removeSample

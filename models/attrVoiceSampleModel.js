@@ -1,17 +1,19 @@
 const db = require('../data/dbConfig.js');
 
 const addAVS = async (data) => {
+  // Create relation using voice sample id and attribute id
   return await db('attributes_voice_samples')
     .insert(data)
     .returning('id');
 }
-
+// Function to delete an attribute / voice sample relation
 const remove = async (id, title) => {
-  console.log("id, title", id, title)
+  // Get id of attribute
   const attrID = await db('attributes')
     .where({title})
     .first()
     .select('id')
+  // Get relation id by using voice sample id and attribute id
   const relationID = await db('attributes_voice_samples as avs')
     .where({
       voice_sample_id: id,
@@ -19,8 +21,7 @@ const remove = async (id, title) => {
     })
     .first()
     .select('id')
-  console.log("attrID: ", attrID)
-  console.log("relationID: ", relationID)
+  // Delete relation
   return db('attributes_voice_samples')
     .where({id: relationID.id})
     .del()

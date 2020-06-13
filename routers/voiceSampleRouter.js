@@ -5,6 +5,32 @@ const uploadS3 = require('../common/uploadS3.js');
 
 const voiceSample = require('../models/voiceSamplesModel.js');
 
+router.get('/sample', (req, res) => {
+  voiceSample.findAll()
+    .then(samples => {
+      res.status(200).json(samples)
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
+})
+
+// Get voice sample by id
+router.get('/sample/:id', (req, res) => {
+  let [id] = req.params.id
+  id = Number(id)
+  voiceSample.findById(id)
+    .then(sample => {
+      res.status(200).json(sample)
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: `Could not find voice sample with ID: ${id}`,
+        error: err
+      })
+    })
+})
+
 // Get a list of voice samples for the specified user
 router.get('/:id', (req, res) => {
   // ID is the id of the user
@@ -62,24 +88,34 @@ router.put('/:id', authenticate, (req, res) => {
 
 // Delete a voice sample
 router.delete('/:id', authenticate, (req, res) => {
-  const id = req.params.id;
+  // Retrieve params to locate voice sample
+  const id = Number(req.params.id);
+  // Locate voice sample
   voiceSample.findById(id)
-    .then(
-      voiceSample.removeSample(id)
+    .then(sample => {
+      // Upon successul location of the voice sample:
+      // Pass in the id of the sample and the list of tags associated with it
+      voiceSample.removeSample(sample.id, sample.tags)
         .then(deleted => {
-          res.status(200).json(deleted)
-        })
-        .catch(err => {
-          res.status(500).json({
-            message: `Could not delete voice sample with ID: ${id}`,
-            error: err.message
+          // Respond deletion success
+          res.status(200).json({
+            message: deleted.message,
+            associations_deleted: deleted.tags
           })
         })
-    )
+        .catch(err => {
+          // Respond deletion error
+          res.status(500).json({
+            message: `Could not delete voice sample with ID: ${id}`,
+            error: err
+          })
+        })
+    })
     .catch(err => {
-      res.status(400).json({
+      // Respond location error
+      res.status(500).json({
         message: `Could not find voice sample with ID: ${id}`,
-        error: err.message
+        error: err
       })
     })
 })
