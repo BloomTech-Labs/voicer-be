@@ -9,15 +9,13 @@ jobs:
     name: Test and publish test coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@master
-        with:
-          node-version: "12"
-      - run: npm install
-      - uses: paambaati/codeclimate-action@v2.4.0
+      - name: Test & publish code coverage
+        uses: paambaati/codeclimate-action@v2.6.0
         env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CodeClimateReporterId }}
+          CC_TEST_REPORTER_ID: <code_climate_reporter_id>
         with:
           coverageCommand: npm run coverage
-          coverageLocations: "./coverage/clover.xml:clover"
-          debug: true
+          coverageLocations: |
+            ${{github.workspace}}/routers/coverage/lcov.info:lcov
+            ${{github.workspace}}/models/coverage/lcov.info:lcov
+            ${{github.workspace}}/data/coverage/lcov.info:lcov
