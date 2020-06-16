@@ -37,10 +37,14 @@ const findById = async id => {
 
 // Retrieve samples with attributes
 const findBySampleFilter = async (filter, strict) => {
+  console.log("Before filter mutation: ", filter)
   // Temporary bit here until I update the attributes to always be lower case
   filter = filter.map(element => {
     return element.charAt(0).toUpperCase() + element.slice(1);
   })
+
+  console.log("Filter mutated: ", filter)
+  console.log("Strict: ", strict)
 
   // 
   let samples = await db('voice_samples as vs')
@@ -66,12 +70,14 @@ const findBySampleFilter = async (filter, strict) => {
     .groupBy('vs.id')
 
   if(strict) {
+    console.log("In if statement")
     // Check samples against filter for strict adherence to filter
     let checker = (arr, target) => target.every(v => {arr.includes(v)});
     // Filter out samples that don't match
     samples = samples.filter(sample => {
       return checker(sample.tags, filter);
     })
+    console.log(samples)
   }
   
   // Store list of user id's
@@ -79,8 +85,12 @@ const findBySampleFilter = async (filter, strict) => {
     return sample.owner;
   })
 
+  console.log("userIds :", userIds)
+
   // Remove duplicate values
   userIds = [...new Set(userIds)];
+
+  console.log("userIds after set: ", userIds)
 
   // Return list of users that match the filtered samples
   return Promise.all(userIds.map(async userId => {
