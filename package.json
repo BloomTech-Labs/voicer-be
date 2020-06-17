@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js",
-    "test": "cross-env DB_ENV=testing jest --coverage --watch",
-    "coverage": "CI=true yarn test --coverage --watchAll=false || true"
+    "test": "cross-env DB_ENV=testing jest --coverage --watchAll",
+    "coverage": "CI=true npm run test --coverage --watchAll"
   },
   "repository": {
     "type": "git",
@@ -43,7 +43,6 @@
     "testEnvironment": "node",
     "collectCoverageFrom": [
       "**/*.{js,jsx}",
-      "!**/common/uploadS3.js",
       "!**/migrations/**",
       "!**/node_modules/**",
       "!**/*.spec.{js,jsx}",
