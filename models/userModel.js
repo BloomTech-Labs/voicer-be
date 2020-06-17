@@ -87,6 +87,12 @@ const findBySampleFilter = async (filter, strict) => {
     return sample.owner;
   })
 
+  userIds = userIds.filter(id => {
+    if(id != null) {
+      return id
+    }
+  })
+
   console.log("userIds :", userIds)
 
   // Remove duplicate values
