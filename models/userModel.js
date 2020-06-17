@@ -69,6 +69,8 @@ const findBySampleFilter = async (filter, strict) => {
     ])
     .groupBy('vs.id')
 
+  console.log(samples)
+
   if(strict) {
     console.log("In if statement")
     // Check samples against filter for strict adherence to filter
