@@ -32,7 +32,7 @@ jobs:
           AWSSECRETKEY: ${{ secrets.AWSSECRETKEY }}
           AWSREGION: ${{ secrets.AWSREGION }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          NODE_ENV: testing
+          NODE_ENV: ${{ secrets.NODE_ENV }}
         with:
           # Run our `coverage` script in our `package.json`
           coverageCommand: npm run coverage
