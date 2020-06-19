@@ -1,5 +1,6 @@
 const db = require('../data/dbConfig.js');
 const avs = require('./attrVoiceSampleModel.js');
+const voice = require('./voiceSamplesModel');
 
 const find = async voice_sample_id => {
   const attrID = await db('attributes_voice_samples as avs')
@@ -37,19 +38,31 @@ const createAttribute = async data => {
 const addAttributeToSample = async (data) => {
   const { id, title } = data;
   let attribute;
-  const [attrID] = await db('attributes')
-    .where({title})
-    .select('id');
-  if(attrID) {
-    attribute = await findById(attrID.id)
-  } else {
-    attribute = await createAttribute(title)
+  if(!checkSampleForAttribute(data)){
+    const [attrID] = await db('attributes')
+        .where({title})
+        .select('id');
+    if(attrID) {
+      attribute = await findById(attrID.id)
+    } else {
+      attribute = await createAttribute(title)
+    }
+    const avsData = {
+      attribute_id: attribute.id,
+      voice_sample_id: id
+    }
+    return await avs.addAVS(avsData);
   }
-  const avsData = {
-    attribute_id: attribute.id,
-    voice_sample_id: id
+  return null
+}
+
+const checkSampleForAttribute = async data => {
+  const { id, title } = data;
+  const sample = voice.findById(id)
+  if(sample.tags.includes(title)) {
+    return true
   }
-  return await avs.addAVS(avsData);
+  return false
 }
 
 const edit = async (id, data) => {
