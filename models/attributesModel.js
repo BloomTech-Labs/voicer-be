@@ -38,33 +38,20 @@ const createAttribute = async data => {
 const addAttributeToSample = async (data) => {
   const { id, title } = data;
   let attribute;
-  if(!checkSampleForAttribute(data)){
-    const [attrID] = await db('attributes')
-        .where({title})
-        .select('id');
-    if(attrID) {
-      attribute = await findById(attrID.id)
-    } else {
-      attribute = await createAttribute(title)
-    }
-    const avsData = {
-      attribute_id: attribute.id,
-      voice_sample_id: id
-    }
-    return await avs.addAVS(avsData);
+  const [attrID] = await db('attributes')
+      .where({title})
+      .select('id');
+  if(attrID) {
+    attribute = await findById(attrID.id)
+  } else {
+    attribute = await createAttribute(title)
   }
-  return null
-}
-
-const checkSampleForAttribute = async data => {
-  const { id, title } = data;
-  const sample = voice.findById(id)
-  if(sample.tags.includes(title)) {
-    return true
+  const avsData = {
+    attribute_id: attribute.id,
+    voice_sample_id: id
   }
-  return false
+  return await avs.addAVS(avsData);
 }
-
 const edit = async (id, data) => {
   return await db('attributes')
     .where({id})
