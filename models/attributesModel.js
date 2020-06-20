@@ -1,5 +1,6 @@
 const db = require('../data/dbConfig.js');
 const avs = require('./attrVoiceSampleModel.js');
+const voice = require('./voiceSamplesModel');
 
 const find = async voice_sample_id => {
   const attrID = await db('attributes_voice_samples as avs')
@@ -38,8 +39,8 @@ const addAttributeToSample = async (data) => {
   const { id, title } = data;
   let attribute;
   const [attrID] = await db('attributes')
-    .where({title})
-    .select('id');
+      .where({title})
+      .select('id');
   if(attrID) {
     attribute = await findById(attrID.id)
   } else {
@@ -51,7 +52,6 @@ const addAttributeToSample = async (data) => {
   }
   return await avs.addAVS(avsData);
 }
-
 const edit = async (id, data) => {
   return await db('attributes')
     .where({id})
