@@ -2,12 +2,20 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
+  "apidoc": {
+    "name":"voicer-be",
+    "version": "1.0.0",
+    "description": "Back end for Voicer",
+    "title": "Voicer",
+    "url": "https://voicer-lambda-app.herokuapp.com"
+  },
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js",
     "test": "cross-env DB_ENV=test jest --coverage --watch",
-    "coverage": "CI=true yarn test --coverage --watchAll=false || true"
+    "coverage": "CI=true yarn test --coverage --watchAll=false || true",
+    "doc": "apidoc -i apidocs -o apidoc-out && apidoc-markdown -p apidoc-out -o README.md && rm -rf apidoc-out"
   },
   "repository": {
     "type": "git",
