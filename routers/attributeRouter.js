@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
 })
 
 // add an attribute
-router.post('/', /*checkRole,*/ (req, res) => {
+router.post('/', (req, res) => {
   const data = req.body;
   Attributes.addAttributeToSample(data)
     .then(saved => {

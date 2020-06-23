@@ -50,8 +50,28 @@ const addAttributeToSample = async (data) => {
     attribute_id: attribute.id,
     voice_sample_id: id
   }
-  return await avs.addAVS(avsData);
+
+  if(await checkForDuplicates(avsData)) {
+    return await avs.addAVS(avsData);
+  } else {
+    return null;
+  }
 }
+
+const checkForDuplicates = async data => {
+  const { attribute_id, voice_sample_id } = data;
+  let checker = true;
+  const a_i_d = await db('attributes_voice_samples')
+    .where({voice_sample_id})
+    .select('attribute_id')
+  a_i_d.forEach(aid => {
+    if(aid.attribute_id == attribute_id) {
+      checker = false;
+    }
+  })
+  return checker
+}
+
 const edit = async (id, data) => {
   return await db('attributes')
     .where({id})
