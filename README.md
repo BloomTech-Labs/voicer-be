@@ -1,5 +1,5 @@
 <a name="top"></a>
-# voicer-be v1.0.0
+# Voicer Backend
 
 ## Badges
 [![Maintainability](https://api.codeclimate.com/v1/badges/313de8028968cdb90d36/maintainability)](https://codeclimate.com/github/Lambda-School-Labs/voicer-be/maintainability)
@@ -7,6 +7,11 @@
 
 Back end for Voicer
 
+ - [Attributes](#Attributes)
+   - [Add an attribute to a voice sample](#Add-an-attribute-to-a-voice-sample)
+   - [Delete an attribute](#Delete-an-attribute)
+   - [Edit the properties of an attribute](#Edit-the-properties-of-an-attribute)
+   - [Retrieve all available attributes](#Retrieve-all-available-attributes)
  - [Users](#Users)
    - [Log in to the application](#Log-in-to-the-application)
    - [Register a user](#Register-a-user)
@@ -15,9 +20,110 @@ Back end for Voicer
    - [Retrieve a user by display name](#Retrieve-a-user-by-display-name)
    - [Retrieve a user by id](#Retrieve-a-user-by-id)
    - [Update a user with specified id](#Update-a-user-with-specified-id)
+ - [VoiceSamples](#VoiceSamples)
+   - [Get all voice samples](#Get-all-voice-samples)
+   - [Get voice sample by id](#Get-voice-sample-by-id)
+   - [Get voice samples by user id](#Get-voice-samples-by-user-id)
 
 ___
 
+
+# <a name='Attributes'></a> Attributes
+
+## <a name='Add-an-attribute-to-a-voice-sample'></a> Add an attribute to a voice sample
+[Back to top](#top)
+
+```
+POST /api/attribute
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| voice_sample_id | `Integer` | <p>ID of the voice sample to attach attribute to</p> |
+| title | `String` | <p>Name of the attribute</p> |
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Integer` | <p>ID of many:many association</p> |
+
+### Success response example
+
+#### Success response example - `Success-Response:`
+
+```json
+HTTP 201 Created
+{
+  123
+}
+```
+
+## <a name='Delete-an-attribute'></a> Delete an attribute
+[Back to top](#top)
+
+```
+DELETE /api/attribute/:id
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Integer` | <p>ID of the attribute to be deleted</p> |
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| number | `Integer` | <p>Number rows deleted</p> |
+
+## <a name='Edit-the-properties-of-an-attribute'></a> Edit the properties of an attribute
+[Back to top](#top)
+
+```
+PUT /api/attribute/:id
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Integer` | <p>ID of the attribute to be edited</p> |
+| data | `json` | <p>Data of the attribute to be edited</p> |
+
+## <a name='Retrieve-all-available-attributes'></a> Retrieve all available attributes
+[Back to top](#top)
+
+```
+GET /api/attribute
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| attribute | `json` | <p>Attribute</p> |
+
+### Success response example
+
+#### Success response example - `Success-Response:`
+
+```json
+HTTP 200 ok
+{
+  "id": 1,
+  "title": "Attribute Title"
+}
+```
 
 # <a name='Users'></a> Users
 
@@ -50,7 +156,7 @@ POST /api/login
 ```json
 HTTP 200 OK
 {
-  "token": "encrypted token"
+  "token": "encrypted jwt"
 }
 ```
 
@@ -86,7 +192,7 @@ POST /api/register
 ```json
 HTTP 201 OK
 {
-  "token": "encrypted token"
+  "token": "encrypted jwt"
 }
 ```
 
@@ -215,7 +321,8 @@ HTTP 200 OK
         "tag2",
         "..."
       ]
-   }
+    }
+  ]
 }
 ```
 
@@ -346,3 +453,140 @@ PUT /api/users/:id
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | User |  |  |
+
+# <a name='VoiceSamples'></a> VoiceSamples
+
+## <a name='Get-all-voice-samples'></a> Get all voice samples
+[Back to top](#top)
+
+```
+GET /api/voice/sample
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| sample | `json` | <p>Voice Sample</p> |
+
+### Success response example
+
+#### Success response example - `Success-Response:`
+
+```json
+HTTP 200 OK
+{
+   "id": 1,
+   "owner": 1,
+   "title": "Title",
+   "description": "Description",
+   "rating": 2.3,
+   "s3_location": "aws_s3 url",
+   "tags": [
+     "tag1",
+     "tag2",
+     "..."
+   ]
+}
+```
+
+## <a name='Get-voice-sample-by-id'></a> Get voice sample by id
+[Back to top](#top)
+
+```
+GET /api/voice/sample/:id
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Integer` | <p>ID of voice sample</p> |
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| sample | `json` | <p>Voice Sample</p> |
+
+### Success response example
+
+#### Success response example - `Success-Response:`
+
+```json
+ HTTP 200 OK
+{
+   "id": 1,
+   "owner": 1,
+   "title": "Title",
+   "description": "Description",
+   "rating": 2.3,
+   "s3_location": "aws_s3 url",
+   "tags": [
+     "tag1",
+     "tag2",
+     "..."
+   ]
+}
+```
+
+## <a name='Get-voice-samples-by-user-id'></a> Get voice samples by user id
+[Back to top](#top)
+
+```
+GET /api/voice/:id
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Integer` | <p>ID of user</p> |
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| samples | `json` | <p>Voice Samples</p> |
+
+### Success response example
+
+#### Success response example - `Success-Response:`
+
+```json
+HTTP 200 OK
+[
+  {
+     "id": 1,
+     "owner": 1,
+     "title": "Title",
+     "description": "Description",
+     "rating": 2.3,
+     "s3_location": "aws_s3 url",
+     "tags": [
+       "tag1",
+       "tag2",
+       "..."
+     ]
+  }
+  {
+     "id": 2,
+     "owner": 1,
+     "title": "Title",
+     "description": "Description",
+     "rating": 2.3,
+     "s3_location": "aws_s3 url",
+     "tags": [
+       "tag1",
+       "tag2",
+       "..."
+     ]
+  }
+]
+```
